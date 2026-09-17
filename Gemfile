@@ -14,9 +14,13 @@ gem "connection_pool", "~> 2.4"
 # Audit trail on Article model
 gem "audited", "~> 5.0"
 
-# HTTP client (NewsAPI + Telegram)
+# HTTP client (NewsAPI + Telegram + blockchain notifications)
 gem "faraday", "~> 2.0"
 gem "faraday-retry", "~> 2.0"
+
+# Game API
+gem "rack-cors"
+gem "blueprinter"
 
 # AI relevance filtering
 gem "ruby-openai", "~> 7.0"

@@ -11,7 +11,7 @@ require "action_controller/railtie"
 # require "action_mailbox/engine"
 # require "action_text/engine"
 require "action_view/railtie"
-# require "action_cable/engine"
+require "action_cable/engine"
 # require "rails/test_unit/railtie"
 
 # Require the gems listed in Gemfile, including any gems
@@ -27,6 +27,10 @@ module CpigsNewsBot
     # not contain `.rb` files, or that should not be reloaded or eager loaded.
     # Common ones are `templates`, `generators`, or `middleware`, for example.
     config.autoload_lib(ignore: %w[assets tasks])
+
+    # Game engine classes live in app/games/
+    config.autoload_paths << Rails.root.join("app/games")
+    config.eager_load_paths << Rails.root.join("app/games")
 
     # Configuration for the application, engines, and railties goes here.
     #

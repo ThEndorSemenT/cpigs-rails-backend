@@ -1,0 +1,36 @@
+# config/settings.yml
+# Application-wide settings. Secrets (API keys) should go in Rails credentials
+# (config/credentials.yml.enc) rather than here. This file is safe to commit.
+#
+# Tech debt: migrate GAME_RESULT_API_KEY to Rails credentials once TTY is available.
+
+default: &default
+  game:
+    # URL of the Polygon-side endpoint that receives game results.
+    # Override per-environment or set env var GAME_RESULT_API_URL.
+    result_api_url: <%= ENV.fetch("GAME_RESULT_API_URL", nil) %>
+    # Auth key for the game result API.
+    # TODO: move to Rails credentials (rails credentials:edit) — requires TTY.
+    result_api_key: <%= ENV.fetch("GAME_RESULT_API_KEY", nil) %>
+
+  blockchain:
+    # Polygon Mainnet
+    chain_id: 137
+    rpc_url: "https://polygon-rpc.com/"
+    explorer_url: "https://polygonscan.com/"
+    coink_token_address: "0x1E60032C0b93b5A8A0F3eD485cb35DBfE86972a5"
+    usdc_address: "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359"
+    # NFT contract address — set via env to avoid committing it
+    nft_contract_address: <%= ENV.fetch("NFT_CONTRACT_ADDRESS", nil) %>
+
+  cors:
+    allowed_origins: <%= ENV.fetch("ALLOWED_ORIGINS", "http://localhost:3000") %>
+
+development:
+  <<: *default
+
+test:
+  <<: *default
+
+production:
+  <<: *default

@@ -4,8 +4,24 @@ Rails.application.routes.draw do
   require "sidekiq/cron/web"
   mount Sidekiq::Web => "/sidekiq" if Rails.env.development?
 
+  # Action Cable WebSocket endpoint
+  mount ActionCable.server => "/cable"
+
   # Health check
   get "/up", to: proc { [200, {}, ["OK"]] }
+
+  # Game API
+  namespace :api do
+    namespace :v1 do
+      get  "health",                               to: "health#show"
+      get  "players/:wallet_address/nonce",        to: "players#nonce"
+      get  "players/:wallet_address",              to: "players#show"
+      post "matchmaking",                          to: "matchmaking#create"
+      resources :game_sessions, only: %i[show] do
+        post "moves", to: "game_sessions#submit_move", on: :member
+      end
+    end
+  end
 
   # Article preview pages — the short-URL destination
   # Constraint ensures this never swallows /rails/... or /up
