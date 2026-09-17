@@ -1,4 +1,4 @@
-# rails-backend
+# CPigs Backend
 
 The Rails monolith powering [corruptedpigs.com](https://corruptedpigs.com). It combines two concerns:
 
