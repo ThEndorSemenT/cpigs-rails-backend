@@ -15,3 +15,11 @@ public/assets
 
 # Ignore bundler output when using bind mount
 # (gems are in the 'bundle' named volume instead)
+
+# Architecture / infrastructure docs (public repo — keep deployment details local)
+ARCHITECTURE*.md
+INFRA*.md
+DEPLOY*.md
+docs/architecture/
+docs/infra/
+docs/deploy*
