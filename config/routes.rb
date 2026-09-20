@@ -14,6 +14,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get  "health",                               to: "health#show"
+      post "auth/verify",                          to: "auth/sessions#verify"
       get  "players/:wallet_address/nonce",        to: "players#nonce"
       get  "players/:wallet_address",              to: "players#show"
       post "matchmaking",                          to: "matchmaking#create"

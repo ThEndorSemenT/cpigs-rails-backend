@@ -22,6 +22,9 @@ gem "faraday-retry", "~> 2.0"
 gem "rack-cors"
 gem "blueprinter"
 
+# Ethereum / SIWE — wallet signature verification
+gem "eth", "~> 0.5"
+
 # AI relevance filtering
 gem "ruby-openai", "~> 7.0"
 
@@ -30,6 +33,11 @@ gem "bootsnap", require: false
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
+  gem "rspec-rails"
+  gem "factory_bot_rails"
+  gem "faker"
+  gem "pry-byebug"
+  gem "pry-rails"
 end
 
 group :development do

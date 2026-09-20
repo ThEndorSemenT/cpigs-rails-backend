@@ -2,17 +2,15 @@
 
 ## Security
 
-### SIWE signature verification not implemented
-**Files:** `app/channels/application_cable/connection.rb`, `app/controllers/api/v1/players_controller.rb`
+### ~~SIWE signature verification not implemented~~ ✅ Done
+**Files:** `app/channels/application_cable/connection.rb`, `app/controllers/api/v1/auth/sessions_controller.rb`, `app/services/token_service.rb`
 
-The SIWE (Sign-In with Ethereum) nonce flow is wired up (nonce issued, regenerated after use) but the signature is never verified. Currently any request with an `X-Wallet-Address` header is trusted at face value. This means **any client can impersonate any wallet address**.
-
-**Required work:**
-1. Add a `POST /api/v1/players/:wallet_address/verify` endpoint that accepts `{ signature: "0x..." }`.
-2. Reconstruct the EIP-4361 message server-side and call `eth_recover` (or use the `siwe` gem) to confirm the signature matches the wallet address.
-3. Issue a short-lived session token (JWT or encrypted cookie) on success.
-4. Require that token (not just the header) for all game actions.
-5. Regenerate the nonce after successful verification so it cannot be replayed.
+Resolved. The full SIWE flow is now implemented:
+1. `POST /api/v1/auth/verify` accepts `{ message, signature }`, recovers the wallet via `Eth::Signature.personal_recover`, and verifies it matches the claimed address.
+2. Nonce is single-use — `player.regenerate_nonce!` is called after each successful verification.
+3. A stateless HMAC-signed bearer token is issued and required on all game endpoints (`Authorization: Bearer <token>`).
+4. `ApplicationCable::Connection` verifies the token on WebSocket connect (via `Sec-WebSocket-Protocol` header or `?token=` query param) and rejects unauthenticated connections.
+5. `display_name` column dropped from `players` table.
 
 ---
 

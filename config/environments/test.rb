@@ -6,6 +6,10 @@
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
+  # Log to file so log/test.log is populated for debugging.
+  config.logger = ActiveSupport::Logger.new(Rails.root.join("log/test.log"))
+  config.log_level = :debug
+
   # While tests run files are not watched, reloading is not necessary.
   config.enable_reloading = false
 
@@ -39,4 +43,10 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions.
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Use async adapter for Action Cable in tests (no Redis needed)
+  # config.action_cable.cable = { "adapter" => "async" }
+
+  # # Remove HostAuthorization middleware in test — API controllers don't need it
+  # config.middleware.delete ActionDispatch::HostAuthorization
 end

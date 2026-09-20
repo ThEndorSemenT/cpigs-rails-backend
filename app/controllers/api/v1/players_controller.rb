@@ -10,7 +10,7 @@ module Api
       # GET /api/v1/players/:wallet_address
       def show
         player = Player.find_by!(wallet_address: params[:wallet_address].downcase)
-        render json: { wallet_address: player.wallet_address, display_name: player.display_name }
+        render json: { wallet_address: player.wallet_address }
       rescue ActiveRecord::RecordNotFound
         render_error "Player not found", status: :not_found
       end

@@ -2,7 +2,7 @@ module Api
   module V1
     # POST /api/v1/matchmaking
     # Body: { game_type: "logic" }
-    # Header: X-Wallet-Address
+    # Header: Authorization: Bearer <token>
     class MatchmakingController < ApiController
       before_action :require_player!
 

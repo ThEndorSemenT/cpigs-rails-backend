@@ -10,6 +10,10 @@ RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
       build-essential \
       libpq-dev \
+      libsecp256k1-dev \
+      autoconf \
+      automake \
+      libtool \
       curl \
       git \
       nano \
@@ -18,7 +22,7 @@ RUN apt-get update -qq && \
 # Install gems — copy manifests first so Docker layer cache is reused
 # when only app code changes.
 COPY Gemfile Gemfile.lock ./
-RUN bundle install
+RUN bundle install --jobs 4
 
 # Copy application code (may not include Gemfile.lock on the host)
 COPY . .

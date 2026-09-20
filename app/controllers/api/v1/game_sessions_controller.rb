@@ -2,7 +2,7 @@ module Api
   module V1
     # GET  /api/v1/game_sessions/:id
     # POST /api/v1/game_sessions/:id/moves
-    # Header: X-Wallet-Address
+    # Header: Authorization: Bearer <token>
     class GameSessionsController < ApiController
       before_action :require_player!
       before_action :load_session
