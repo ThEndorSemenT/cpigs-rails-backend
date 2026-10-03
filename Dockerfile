@@ -3,8 +3,11 @@ FROM ruby:3.3.4-slim
 WORKDIR /rails
 
 ENV RAILS_ENV=development \
+    GEM_HOME=/usr/local/bundle/ruby/3.3.0 \
+    GEM_PATH=/usr/local/bundle/ruby/3.3.0 \
     BUNDLE_PATH=/usr/local/bundle \
     BUNDLE_WITHOUT=""
+ENV PATH=/usr/local/bundle/ruby/3.3.0/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
