@@ -84,10 +84,31 @@ The migrations add indexes but not `foreign_key` constraints for `player1_id`, `
 
 ## Testing
 
-### No tests for game code
-The `cpigs-backend` source had RSpec specs (factories, model specs, `LogicEngine` spec, `SubmitMove` spec). None have been ported. Before shipping to production, port or rewrite:
+### Partial test coverage for game code
+The following specs have been added:
+- `spec/services/matchmaking/join_game_spec.rb` ✅
+
+Still missing:
 - `spec/models/game_session_spec.rb`
 - `spec/models/player_spec.rb`
 - `spec/games/logic_engine_spec.rb`
 - `spec/services/games/submit_move_spec.rb`
-- `spec/factories/` (players, game_sessions, moves, game_results)
+
+### Test database isolation
+`use_transactional_fixtures` is enabled, but `GameSession.find_or_create_for_matchmaking` uses a
+`FOR UPDATE SKIP LOCKED` sub-transaction. If stale rows are left in the test DB (e.g. from manual
+`rails runner` calls or a failed test run), subsequent specs will match against them and fail.
+Run `bin/rails db:truncate_all RAILS_ENV=test` (or re-create the test DB) to recover.
+
+### `Games::Registry` populated lazily at request time
+`logic_engine.rb` registers itself via a side-effect (`Games::Registry.register`) that only runs
+when the file is loaded. Nothing in the request path references `Games::LogicEngine` directly, so
+Zeitwerk never loads it on its own in development (`eager_load = false`).
+
+The fix (in `app/games/games/registry.rb`) is a `load_engines` guard that `require`s all
+`*_engine.rb` files on first call to `game_types` or `engine_for`. This works at request time when
+the autoloader is ready. An initializer-based fix breaks boot because autoloading is not available
+during initializers in Rails 8 / Zeitwerk.
+
+**Required work when adding a new engine:** drop a `*_engine.rb` file in `app/games/games/`; the
+glob in `load_engines` will pick it up automatically.

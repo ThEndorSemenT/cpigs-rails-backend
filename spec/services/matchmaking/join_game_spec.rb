@@ -8,13 +8,14 @@ RSpec.describe "Matchmaking flow", type: :model do
       it "creates a new waiting session" do
         result = described_class.new(player: player, game_type: "logic").call
 
-        expect(result.matched).to be false
-        expect(result.session).to be_a(GameSession)
-        expect(result.session.status).to eq("waiting")
-        expect(result.session.player1).to eq(player)
-        expect(result.session.player2).to be_nil
-        expect(result.session.is_vs_cpu).to be false
-        expect(result.session.game_type).to eq("logic")
+        expect(result).to have_attributes(matched: false)
+        expect(result.session).to have_attributes(
+          status:    "waiting",
+          player1:   player,
+          player2:   nil,
+          is_vs_cpu: false,
+          game_type: "logic"
+        )
       end
 
       it "generates a matchmaking_token" do
@@ -39,10 +40,12 @@ RSpec.describe "Matchmaking flow", type: :model do
       it "matches into the existing session" do
         result = described_class.new(player: player, game_type: "logic").call
 
-        expect(result.matched).to be true
+        expect(result).to have_attributes(matched: true)
         expect(result.session).to eq(waiting_session)
-        expect(result.session.player2).to eq(player)
-        expect(result.session.status).to eq("active")
+        expect(result.session).to have_attributes(
+          player2: player,
+          status:  "active"
+        )
       end
 
       it "does not create a new session" do
@@ -66,9 +69,9 @@ RSpec.describe "Matchmaking flow", type: :model do
       it "creates a new session instead of joining the wrong type" do
         result = described_class.new(player: player, game_type: "logic").call
 
-        expect(result.matched).to be false
+        expect(result).to have_attributes(matched: false)
         expect(result.session).not_to eq(waiting_session)
-        expect(result.session.game_type).to eq("logic")
+        expect(result.session).to have_attributes(game_type: "logic")
       end
     end
 
@@ -80,7 +83,7 @@ RSpec.describe "Matchmaking flow", type: :model do
       it "creates a new session instead of matching with itself" do
         result = described_class.new(player: player, game_type: "logic").call
 
-        expect(result.matched).to be false
+        expect(result).to have_attributes(matched: false)
         expect(result.session).not_to eq(own_session)
       end
     end

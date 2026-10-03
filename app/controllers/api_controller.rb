@@ -8,12 +8,10 @@ class ApiController < ActionController::API
 
   def set_current_player
     token = extract_token_from_header
-    if token
-      payload = TokenService.decode(token)
-      if payload
-        @current_player = Player.find_by(wallet_address: payload["wallet"]&.downcase)
-      end
-    end
+    return unless token
+
+    payload = TokenService.decode(token)
+    @current_player = Player.find_by(wallet_address: payload["wallet"]&.downcase) if payload
   end
 
   def current_player
