@@ -7,12 +7,21 @@ default: &default
   max_audit_versions: 10
   short_url_base: "https://cpigs.to"
   languages:
+    # NewsAPI's `pt` language filter returns articles from any Portuguese-speaking
+    # country — in practice the results are overwhelmingly Brazilian because
+    # NewsAPI indexes no Portuguese (Portugal) outlets. This feed therefore covers
+    # Brazilian corruption news. The keyword filter still rejects off-topic articles
+    # (politics, sport, finance) before they reach Telegram.
     - code: "pt"
-      keywords: "corrupção OR suborno OR desvio de dinheiro público OR fraude OR nepotismo"
+      keywords: "corrupção OR suborno OR peculato OR lavagem de dinheiro OR desvio de verbas OR propina OR fraude licitação"
       telegram_chat_id: "@cpigsgame"
       telegram_topic_id: 2
+    # English feed: international corruption stories worldwide.
+    # "kickback" and "graft" removed from the API query — too obscure as search
+    # terms (near-zero results on NewsAPI). The keyword filter still matches them
+    # in article bodies.
     - code: "en"
-      keywords: "corruption OR bribery OR embezzlement OR fraud OR kickback OR graft"
+      keywords: "corruption OR bribery OR embezzlement OR fraud OR \"money laundering\""
       telegram_chat_id: "@cpigsgame"
       telegram_topic_id: 4
 
