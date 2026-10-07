@@ -1,22 +1,32 @@
 class KeywordFilter
   CORRUPTION_KEYWORDS = {
     high: [
+      # Portuguese
       "corrupção", "suborno", "desvio de dinheiro", "fraude", "nepotismo",
       "propina", "lavagem de dinheiro", "peculato", "concussão",
       "tráfico de influência", "enriquecimento ilícito", "caixa dois",
-      "kickback", "propinas", "rachadinha", "mensalão", "petrolão"
+      "propinas", "rachadinha", "mensalão", "petrolão",
+      # English
+      "corruption", "bribery", "embezzlement", "kickback", "money laundering",
+      "graft", "extortion", "misappropriation", "malfeasance"
     ],
     medium: [
+      # Portuguese
       "investigação", "inquérito", "polícia federal", "ministério público",
       "operação", "delação", "colaboração premiada", "preso", "prisão",
       "indiciado", "réu", "condenação", "sentença", "tribunal",
-      "suspeito", "alvo", "mandado", "busca e apreensão", "quebra de sigilo"
+      "suspeito", "alvo", "mandado", "busca e apreensão", "quebra de sigilo",
+      # English
+      "investigation", "indictment", "arrested", "charged", "convicted",
+      "sentence", "trial", "probe", "prosecutor", "misconduct", "allegation",
+      "bribe", "fraud"
     ],
     low: [
-      "política", "governo", "prefeito", "governador", "deputado", "senador",
-      "vereador", "secretário", "ministro", "presidente", "câmara",
-      "assembleia", "congresso", "prefeitura", "estado", "município",
-      "licitação", "contrato", "obra pública", "emenda", "orçamento"
+      # Portuguese — only terms with specific public-procurement / corruption context;
+      # broad political titles (senador, presidente, …) removed to avoid false positives.
+      "licitação", "contrato público", "obra pública", "emenda parlamentar", "orçamento secreto",
+      # English
+      "procurement", "public funds", "public contract", "official misconduct", "public tender"
     ]
   }.freeze
 
@@ -24,7 +34,7 @@ class KeywordFilter
 
   def self.score_relevance(article)
     text = [article.title, article.description, article.content].compact.join(" ").downcase
-    return 0.0 if text.blank?
+    return [0.0, []] if text.blank?
 
     score = 0.0
     matched = []
