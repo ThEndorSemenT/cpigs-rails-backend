@@ -84,7 +84,7 @@ class TelegramNotifierJob < ApplicationJob
       #{escape(article.description.to_s.truncate(300))}
 
       🗞 #{escape(article.source_name.to_s)} · #{escape(date)}
-      🔗 #{article.short_url}
+      🔗 #{escape(article.url)}
     MSG
   end
 

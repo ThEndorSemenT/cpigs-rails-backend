@@ -10,4 +10,9 @@ news_fetcher:
   cron: "*/30 * * * *"
   class: NewsFetcherJob
   queue: default
+  # NewsFetcherJob is an ActiveJob. Without this flag sidekiq-cron auto-detects
+  # it via `defined?(ActiveJob::Base)`, which resolves to Sidekiq::ActiveJob
+  # (defined by Sidekiq 7.3) inside the gem's namespace and never matches —
+  # the cron then calls `perform_async` on an ActiveJob and fails every tick.
+  active_job: true
   description: "Fetch corruption news from NewsAPI (30 min interval, ~96 req/day for 2 languages)"

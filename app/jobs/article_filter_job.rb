@@ -17,17 +17,26 @@ class ArticleFilterJob < ApplicationJob
     threshold = config[:relevance_threshold].to_f
 
     # --- Step A: Relevance scoring (AI or keyword fallback) ---
-    if ai_configured?
-      ai = AiFilter.new
-      score = ai.score_relevance(article)
-      Rails.logger.info "[ArticleFilterJob] Article #{article_id} AI relevance_score=#{score.round(2)}"
-    else
+    ai    = ai_configured? ? AiFilter.new : nil
+    score = nil
+
+    if ai
+      begin
+        score = ai.score_relevance(article)
+        Rails.logger.info "[ArticleFilterJob] Article #{article_id} AI relevance_score=#{score.round(2)}"
+      rescue AiFilter::ConfigurationError => e
+        Rails.logger.error "[ArticleFilterJob] Article #{article_id} AI unavailable (#{e.message}); falling back to keyword filter"
+        ai = nil
+      end
+    end
+
+    if score.nil?
       score, matched = KeywordFilter.score_relevance(article)
       Rails.logger.info "[ArticleFilterJob] Article #{article_id} keyword relevance_score=#{score.round(2)} matched=#{matched.join(', ')}"
     end
 
     article.update!(relevance_score: score)
-    article.update!(relevance_score: score)
+
     Rails.logger.info "[ArticleFilterJob] Article #{article_id} relevance_score=#{score.round(2)}"
 
     if score < threshold
@@ -45,7 +54,7 @@ class ArticleFilterJob < ApplicationJob
                     .limit(30)
                     .pluck(:id, :story_key, :title)
 
-    result = ai.cluster(article, recent)
+    result = cluster(article, recent, ai)
     Rails.logger.info "[ArticleFilterJob] Article #{article_id} cluster=#{result.inspect}"
 
     article.update!(story_key: result[:story_key])
@@ -82,6 +91,20 @@ class ArticleFilterJob < ApplicationJob
   end
 
   private
+
+  # Clusters the article with the AI filter when one is available; otherwise
+  # (or when the API key is rejected) falls back to LocalClusterer so the
+  # pipeline keeps moving without ever calling a nil `ai`.
+  def cluster(article, recent, ai)
+    return LocalClusterer.call(article, recent) unless ai
+
+    begin
+      ai.cluster(article, recent)
+    rescue AiFilter::ConfigurationError => e
+      Rails.logger.error "[ArticleFilterJob] AI clustering unavailable (#{e.message}); falling back to local clustering"
+      LocalClusterer.call(article, recent)
+    end
+  end
 
   def ai_configured?
     Rails.application.credentials.openai_api_key.present? ||

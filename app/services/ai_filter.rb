@@ -1,6 +1,12 @@
 class AiFilter
   class Error < StandardError; end
 
+  # Raised for failures that retrying can never fix (missing/invalid API key,
+  # revoked access). Callers should fall back instead of retrying.
+  class ConfigurationError < Error; end
+
+  AUTH_STATUS_CODES = [401, 403].freeze
+
   RELEVANCE_PROMPT = <<~PROMPT
     You are a news relevance classifier for a corruption watchdog.
 
@@ -55,7 +61,7 @@ class AiFilter
     result = chat_json(prompt, max_tokens: 120)
     result["score"].to_f
   rescue => e
-    raise Error, "Relevance scoring failed: #{e.message}"
+    raise wrapped_error(e, "Relevance scoring failed")
   end
 
   # Returns a hash:
@@ -84,10 +90,23 @@ class AiFilter
       duplicate:     result["duplicate"] == true
     }
   rescue => e
-    raise Error, "Story clustering failed: #{e.message}"
+    raise wrapped_error(e, "Story clustering failed")
   end
 
   private
+
+  def wrapped_error(error, context)
+    message = "#{context}: #{error.message}"
+    auth_error?(error) ? ConfigurationError.new(message) : Error.new(message)
+  end
+
+  # Faraday raises on 401/403 responses; those mean the API key is missing,
+  # invalid or revoked, so no amount of retries will help.
+  def auth_error?(error)
+    [error, error.cause].compact.any? do |e|
+      AUTH_STATUS_CODES.include?(e.try(:response_status))
+    end
+  end
 
   def chat_json(prompt, max_tokens:)
     response = @client.chat(
