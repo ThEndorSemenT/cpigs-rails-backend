@@ -1,4 +1,5 @@
 class GameSession < ApplicationRecord
+  include HasPublicId
   STATUSES = %w[waiting active playing resolving resolved expired cancelled].freeze
   # waiting   – P1 joined, waiting for P2 or CPU fallback timer
   # active    – both players connected

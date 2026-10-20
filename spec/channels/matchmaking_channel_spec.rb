@@ -28,7 +28,7 @@ RSpec.describe MatchmakingChannel, type: :channel do
       expect(transmissions.last).to eq(
         "type" => "matched",
         "vs_cpu" => false,
-        "session_id" => session.id
+        "session_id" => session.public_id
       )
     end
 
@@ -40,7 +40,7 @@ RSpec.describe MatchmakingChannel, type: :channel do
       expect(transmissions.last).to eq(
         "type" => "matched",
         "vs_cpu" => true,
-        "session_id" => session.id
+        "session_id" => session.public_id
       )
     end
   end

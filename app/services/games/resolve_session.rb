@@ -30,7 +30,7 @@ module Games
     def broadcast_result!(game_result)
       ActionCable.server.broadcast("game_session_#{@session.id}", {
         type:          "game_resolved",
-        session_id:    @session.id,
+        session_id:    @session.to_param,
         draw:          game_result.draw,
         winner_wallet: game_result.winner&.wallet_address,
         loser_wallet:  game_result.loser&.wallet_address

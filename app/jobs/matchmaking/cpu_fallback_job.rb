@@ -19,7 +19,7 @@ module Matchmaking
       end
 
       ActionCable.server.broadcast("matchmaking_#{session.matchmaking_token}", {
-        type: "matched", vs_cpu: true, session_id: session.id
+        type: "matched", vs_cpu: true, session_id: session.to_param
       })
     end
   end
