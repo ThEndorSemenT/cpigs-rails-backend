@@ -44,7 +44,7 @@ RSpec.describe "Api::V1::Matchmaking", type: :request do
 
         expect(response).to have_http_status(:created)
         body = JSON.parse(response.body)
-        expect(body["session_id"]).to eq(waiting.id)
+        expect(body["session_id"]).to eq(waiting.public_id)
         expect(body["matched"]).to be true
         expect(waiting.reload.status).to eq("active")
       end

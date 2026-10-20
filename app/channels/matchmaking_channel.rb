@@ -9,7 +9,7 @@ class MatchmakingChannel < ApplicationCable::Channel
 
     # Handle reconnect: immediately transmit if already matched
     if session.status != "waiting"
-      transmit({ type: "matched", vs_cpu: session.is_vs_cpu, session_id: session.id })
+      transmit({ type: "matched", vs_cpu: session.is_vs_cpu, session_id: session.to_param })
     end
   end
 

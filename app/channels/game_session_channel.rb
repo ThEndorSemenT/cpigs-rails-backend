@@ -6,7 +6,7 @@
 #   "opponent_timeout" – opponent abandoned
 class GameSessionChannel < ApplicationCable::Channel
   def subscribed
-    session = GameSession.find_by(id: params[:session_id])
+    session = GameSession.find_by_param(params[:session_id])
     return reject if session.nil? || !participant?(session)
 
     stream_from "game_session_#{session.id}"
@@ -23,7 +23,7 @@ class GameSessionChannel < ApplicationCable::Channel
   end
 
   def session_state(session)
-    { id: session.id, game_type: session.game_type, status: session.status,
+    { id: session.to_param, game_type: session.game_type, status: session.status,
       is_vs_cpu: session.is_vs_cpu, player1: session.player1.wallet_address,
       player2: session.player2&.wallet_address }
   end

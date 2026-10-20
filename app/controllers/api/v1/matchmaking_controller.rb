@@ -11,7 +11,8 @@ module Api
         result = Matchmaking::JoinGame.new(player: current_player, game_type: game_type).call
         session = result.session
         render json: {
-          session_id:        session.id,
+          session_id:        session.to_param,
+          public_id:         session.public_id,
           matchmaking_token: session.matchmaking_token,
           status:            session.status,
           matched:           result.matched,

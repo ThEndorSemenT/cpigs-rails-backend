@@ -39,13 +39,14 @@ module Api
       private
 
       def load_session
-        @session = GameSession.find_by(id: params[:id] || params[:game_session_id])
+        @session = GameSession.find_by_param(params[:id] || params[:game_session_id])
         render_error("Session not found", status: :not_found) unless @session
       end
 
       def session_json
         {
-          id:         @session.id,
+          id:         @session.to_param,
+          public_id:  @session.public_id,
           game_type:  @session.game_type,
           status:     @session.status,
           is_vs_cpu:  @session.is_vs_cpu,
