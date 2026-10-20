@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_000001) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_21_000002) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -89,7 +89,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_000001) do
     t.jsonb "metadata", default: {}, null: false
     t.bigint "player1_id", null: false
     t.bigint "player2_id"
-    t.string "public_id", limit: 15
+    t.string "public_id", limit: 15, null: false
     t.datetime "resolved_at"
     t.string "status", default: "waiting", null: false
     t.datetime "updated_at", null: false
