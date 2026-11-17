@@ -17,8 +17,7 @@ namespace :check do
         REDIS_URL
       ]
 
-      # Use stage name for env file (staging.env), not rails_env (production.env)
-      env_file = shared_path.join("config/#{fetch(:stage)}.env")
+      env_file = shared_path.join(".env")
 
       unless test(:test, '-f', env_file)
         raise "Environment file not found: #{env_file}"
@@ -70,6 +69,21 @@ namespace :deploy do
   end
 end
 before 'deploy:check:linked_files', 'deploy:upload_puma_config'
+
+namespace :db do
+  desc 'Create database if it does not exist'
+  task :create_if_missing do
+    on roles(:app) do
+      within release_path do
+        with rails_env: fetch(:rails_env) do
+          # Source .profile to load environment variables, then run db:create
+          execute "source $HOME/.profile && bundle exec rake db:create"
+        end
+      end
+    end
+  end
+end
+before 'deploy:migrate', 'db:create_if_missing'
 
 namespace :deploy do
   desc 'Upload VPS-specific master key'
