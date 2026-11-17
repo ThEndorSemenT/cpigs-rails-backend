@@ -155,25 +155,26 @@ ssh ubq "cd /var/www/cpigs-backend/current && bundle exec rails console -e produ
 
 ## Sidekiq Worker
 
-The Sidekiq worker runs as a systemd user service. After first deploy:
+The Sidekiq worker runs as a systemd user service, mirroring the Puma unit. The
+unit file is installed manually on the VPS (not managed by Capistrano):
 
 ```bash
 # On the VPS as deploy user
-mkdir -p ~/.config/systemd/user
-
-# Create the service file
-cat > ~/.config/systemd/user/sidekiq-cpigs-backend.service << 'EOF'
+cat > ~/.config/systemd/user/cpigs-backend_sidekiq_staging.service << 'EOF'
 [Unit]
-Description=Sidekiq for cpigs-backend
-After=network.target
+Description=Sidekiq for cpigs-backend (staging)
+After=syslog.target network.target
 
 [Service]
 Type=simple
 WorkingDirectory=/var/www/cpigs-backend/current
-EnvironmentFile=/var/www/cpigs-backend/shared/config/staging.env
 ExecStart=/home/deploy/.rbenv/bin/rbenv exec bundle exec sidekiq -e production
+EnvironmentFile=/var/www/cpigs-backend/shared/.env
 Restart=always
 RestartSec=5
+StandardOutput=append:/var/www/cpigs-backend/shared/log/sidekiq.log
+StandardError=append:/var/www/cpigs-backend/shared/log/sidekiq_error.log
+SyslogIdentifier=cpigs-backend_sidekiq_staging
 
 [Install]
 WantedBy=default.target
@@ -181,9 +182,15 @@ EOF
 
 # Enable and start
 systemctl --user daemon-reload
-systemctl --user enable sidekiq-cpigs-backend
-systemctl --user start sidekiq-cpigs-backend
+systemctl --user enable cpigs-backend_sidekiq_staging
+systemctl --user start cpigs-backend_sidekiq_staging
 ```
+
+Sidekiq does **not** restart automatically on deploy — run this after each deploy
+when code changed, or rely on the `Restart=always` policy for crash recovery.
+
+Note: the unit loads env from `shared/.env` (not `shared/config/staging.env`,
+which does not exist). Redis is already running as a system service on the VPS.
 
 ## Port Configuration
 
@@ -193,12 +200,12 @@ This application runs on port **3001** (configured in `config/puma.webdock.rb`) 
 
 ### Check Puma status
 ```bash
-systemctl --user status puma-cpigs-backend
+systemctl --user status cpigs-backend_puma_staging
 ```
 
 ### Check Sidekiq status
 ```bash
-systemctl --user status sidekiq-cpigs-backend
+systemctl --user status cpigs-backend_sidekiq_staging
 ```
 
 ### View Puma logs
