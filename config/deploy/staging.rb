@@ -7,10 +7,10 @@ server "ubq", user: "deploy", roles: %w[app web]
 
 set :rails_env, "production"
 set :branch, ENV.fetch("BRANCH", "main")
-set :puma_service_unit_env_files, -> { [shared_path.join("config/staging.env").to_s] }
+set :puma_service_unit_env_files, -> { [shared_path.join(".env").to_s] }
 
-# Stage-specific linked files
-append :linked_files, "config/staging.env"
+# Link shared/.env to .env in release (dotenv-rails loads .env by default)
+append :linked_files, ".env"
 
 # role-based syntax
 # ==================
