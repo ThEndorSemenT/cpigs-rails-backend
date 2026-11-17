@@ -13,6 +13,7 @@ namespace :check do
   task :env_vars do
     on roles(:app) do
       required_vars = %w[
+        CPIGS_NEWS_BOT_DATABASE_PASSWORD
         REDIS_URL
       ]
 

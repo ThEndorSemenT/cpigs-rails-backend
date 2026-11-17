@@ -1,5 +1,11 @@
 require "active_support/core_ext/integer/time"
 
+# Load staging.env when deploying to the staging VPS (which runs RAILS_ENV=production).
+# Dotenv.load only fills variables that are not already set, so systemd-provided
+# values via EnvironmentFile take precedence.
+env_file = Rails.root.join("config/staging.env")
+Dotenv.load(env_file) if defined?(Dotenv) && File.exist?(env_file)
+
 Rails.application.configure do
   # Settings specified here will take precedence over those in config/application.rb.
 
