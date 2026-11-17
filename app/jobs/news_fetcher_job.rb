@@ -4,7 +4,13 @@ class NewsFetcherJob < ApplicationJob
   LAST_RUN_KEY = "cpigs:news_fetcher:last_run"
 
   def perform
-    config  = Rails.application.config_for(:news_bot)
+    config = Rails.application.config_for(:news_bot)
+
+    unless config[:news_fetch_enabled]
+      Rails.logger.info "[NewsFetcherJob] Fetch disabled (set NEWS_FETCH_ENABLED=true to enable) — skipping run"
+      return
+    end
+
     client  = NewsApiClient.new
     fetched = 0
     queued  = 0

@@ -2,6 +2,11 @@ class TelegramNotifierJob < ApplicationJob
   queue_as :default
 
   def perform(article_id, replace_message_id: nil)
+    unless Rails.application.config_for(:news_bot)[:telegram_enabled]
+      Rails.logger.info "[TelegramNotifierJob] Telegram disabled (set TELEGRAM_ENABLED=true to enable) — skipping article #{article_id}"
+      return
+    end
+
     article = Article.find_by(id: article_id)
     unless article
       Rails.logger.warn "[TelegramNotifierJob] Article #{article_id} not found"

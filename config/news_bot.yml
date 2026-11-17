@@ -1,4 +1,13 @@
 default: &default
+  # Pipeline switches — side-effecting integrations default to OFF and must be
+  # opted into per environment via NEWS_FETCH_ENABLED / TELEGRAM_ENABLED (.env).
+  # This keeps dev/staging from spending the shared NewsAPI/OpenAI quota and from
+  # posting duplicate news to the production Telegram channel. Note: articles
+  # approved while telegram_enabled is false are never notified — the flag must
+  # be on *before* articles get approved for them to be sent.
+  news_fetch_enabled: <%= ENV.fetch("NEWS_FETCH_ENABLED", "false") == "true" %>
+  telegram_enabled:   <%= ENV.fetch("TELEGRAM_ENABLED",   "false") == "true" %>
+
   # Must match the cron in config/schedule.yml.
   # Used as fallback window on the very first run (no Redis last_run stored yet).
   # Budget: 100 req/day ÷ languages. With 2 languages: max 50 runs/day → every 30 min.
@@ -32,6 +41,9 @@ development:
 test:
   <<: *default
   short_url_base: "http://localhost:3000"
+  # Specs stub TelegramClient, so the pipeline must be enabled by default in tests.
+  news_fetch_enabled: true
+  telegram_enabled: true
 
 production:
   <<: *default
