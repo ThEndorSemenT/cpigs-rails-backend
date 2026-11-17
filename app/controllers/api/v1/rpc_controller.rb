@@ -7,12 +7,13 @@ module Api
       ALCHEMY_URL = ENV['ALCHEMY_POLYGON_RPC_URL']
 
       def polygon
-        response = HTTParty.post(
+        response = Faraday.post(
           ALCHEMY_URL,
-          body: request.raw_post,
-          headers: { 'Content-Type' => 'application/json' }
+          request.raw_post,
+          { 'Content-Type' => 'application/json' }
         )
-        render json: response.body, status: response.code
+
+        render json: response.body, status: response.status
       end
     end
   end

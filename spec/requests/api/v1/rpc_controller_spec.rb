@@ -1,0 +1,40 @@
+require "rails_helper"
+
+RSpec.describe Api::V1::RpcController, type: :request do
+  describe "POST /api/v1/rpc/polygon" do
+    let(:rpc_request_body) { { jsonrpc: "2.0", method: "eth_blockNumber", params: [], id: 1 }.to_json }
+    let(:rpc_response_body) { { jsonrpc: "2.0", id: 1, result: "0x1234" }.to_json }
+    let(:faraday_response) { instance_double(Faraday::Response, body: rpc_response_body, status: 200) }
+
+    before do
+      allow(Faraday).to receive(:post).and_return(faraday_response)
+    end
+
+    it "proxies the request to Alchemy and returns the response" do
+      post api_v1_rpc_polygon_path, params: rpc_request_body, headers: { "Content-Type" => "application/json" }
+
+      expect(response).to have_http_status(:ok)
+      expect(JSON.parse(response.body)).to eq(JSON.parse(rpc_response_body))
+    end
+
+    it "forwards the request body to Alchemy" do
+      post api_v1_rpc_polygon_path, params: rpc_request_body, headers: { "Content-Type" => "application/json" }
+
+      expect(Faraday).to have_received(:post).with(
+        ENV["ALCHEMY_POLYGON_RPC_URL"],
+        rpc_request_body,
+        { "Content-Type" => "application/json" }
+      )
+    end
+
+    context "when Alchemy returns an error" do
+      let(:faraday_response) { instance_double(Faraday::Response, body: { error: "Internal Server Error" }.to_json, status: 500) }
+
+      it "returns the error status from Alchemy" do
+        post api_v1_rpc_polygon_path, params: rpc_request_body, headers: { "Content-Type" => "application/json" }
+
+        expect(response).to have_http_status(:internal_server_error)
+      end
+    end
+  end
+end
