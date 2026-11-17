@@ -21,6 +21,7 @@ Rails.application.routes.draw do
       resources :game_sessions, only: %i[show] do
         post "moves", to: "game_sessions#submit_move", on: :member
       end
+      post 'rpc/polygon', to: 'rpc#polygon'
     end
   end
 
