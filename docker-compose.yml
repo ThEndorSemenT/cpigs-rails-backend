@@ -42,6 +42,7 @@ services:
     environment:
       DATABASE_URL: postgresql://cpigs:cpigs_password@postgres/cpigs_news_bot_development
       REDIS_URL: redis://redis:6379/0
+      ALLOWED_ORIGINS: https://cpigstest.umaboaquestao.pt
     ports:
       - "3000:3000"
     volumes:

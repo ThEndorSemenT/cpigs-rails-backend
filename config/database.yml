@@ -80,6 +80,6 @@ test:
 #
 production:
   <<: *default
-  database: cpigs_news_bot_production
+  database: cpigs_news_bot
   username: cpigs_news_bot
   password: <%= ENV["CPIGS_NEWS_BOT_DATABASE_PASSWORD"] %>

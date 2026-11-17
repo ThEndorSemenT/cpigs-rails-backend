@@ -4,6 +4,7 @@
 # Ignore all environment files (except templates).
 .env*
 !.env.example
+/config/*.env
 
 # Ignore default SQLite file.
 /db/*.sqlite3
@@ -41,10 +42,8 @@
 # Ignore macOS metadata.
 .DS_Store
 
-# Architecture / infrastructure docs (public repo — keep deployment details local)
+# Architecture / infrastructure docs (keep sensitive deployment details local)
 ARCHITECTURE*.md
 INFRA*.md
-DEPLOY*.md
 docs/architecture/
 docs/infra/
-docs/deploy*

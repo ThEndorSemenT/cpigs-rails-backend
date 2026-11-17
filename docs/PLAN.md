@@ -357,14 +357,30 @@ end
 
 ## Environment Variables / Secrets
 
+### Rails Credentials (config/credentials.yml.enc)
+
+These secrets are encrypted and stored in the repository. Edit with `bin/rails credentials:edit`.
+
+| Key | Description |
+|---|---|
+| `secret_key_base` | Rails secret for session signing and encryption |
+| `news_api_key` | NewsAPI.org API key |
+| `telegram_bot_token` | BotFather token |
+
+### Environment Variables (.env or staging.env)
+
 | Variable | Description |
 |---|---|
-| `NEWS_API_KEY` | NewsAPI.org API key |
-| `TELEGRAM_BOT_TOKEN` | BotFather token |
-| `OPENAI_API_KEY` | For the AI filter layer |
-| `DATABASE_URL` | PostgreSQL connection string |
-| `REDIS_URL` | Sidekiq Redis |
+| `OPENAI_API_KEY` | For the AI filter layer (optional — blank skips AI filtering) |
+| `REDIS_URL` | Sidekiq Redis connection string |
 | `SHORT_URL_BASE` | `https://cpigs.to` (override for local dev) |
+| `ALCHEMY_POLYGON_RPC_URL` | Polygon RPC endpoint for blockchain features (optional) |
+
+### Database Configuration
+
+The app uses Rails credentials or DATABASE_URL for database connection:
+- **Development/Test:** Connects to local PostgreSQL (see `config/database.yml`)
+- **Production:** Uses `config/database.yml` with `CPIGS_NEWS_BOT_DATABASE_PASSWORD` env var, or override with `DATABASE_URL`
 
 ---
 
@@ -428,10 +444,14 @@ gem "ruby-openai",     "~> 7.0"
 - [x] Dockerfile + docker-compose.yml (4 services: postgres, redis, app, worker)
 - [x] `.env.example`
 - [x] Separate entrypoints: `bin/docker-entrypoint` (app) and `bin/worker-entrypoint` (worker)
-- [ ] Deploy to VPS or Fly.io
-- [ ] Point `cpigs.to` DNS to the same app (A record / CNAME)
-- [ ] Add `cpigs.to` as allowed host in `config/environments/production.rb`
-- [ ] TLS via Let's Encrypt / Fly's automatic certs
+- [x] Capistrano configuration (`Capfile`, `config/deploy.rb`, stage files)
+- [x] Staging/Production Puma config (`config/puma.webdock.rb`) — binds to port 3001
+- [x] Deployment documentation (`docs/DEPLOYMENT.md`)
+- [x] Add `cpigs.to` as allowed host in `config/environments/production.rb`
+- [ ] Install PostgreSQL on VPS (see `docs/DEPLOYMENT.md`)
+- [ ] Deploy to VPS via `cap staging deploy`
+- [ ] Point `cpigs.to` DNS to the VPS (A record)
+- [ ] TLS via Let's Encrypt (`certbot --nginx -d cpigs.to`)
 - [ ] Fill in real API keys and smoke test end-to-end (fetch → filter → notify → preview page)
 
 ---

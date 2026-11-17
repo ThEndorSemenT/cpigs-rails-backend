@@ -61,4 +61,5 @@ Rails.application.configure do
   # Allow the cpigs.to domain (and any Docker container hostname) in development
   config.hosts << "cpigs.to"
   config.hosts << /.*\.cpigs\.to/
+  config.hosts << "cpigstestapi.umaboaquestao.pt"
 end
