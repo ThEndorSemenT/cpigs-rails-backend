@@ -3,8 +3,8 @@
 # Production Puma configuration for VPS deployment via Capistrano.
 # This file is uploaded to shared/config/puma.rb during deployment.
 
-# Application directory
-app_dir = File.expand_path("../..", __dir__)
+# Application directory - use current symlink for Capistrano deployments
+app_dir = "/var/www/cpigs-backend/current"
 directory app_dir
 
 # Set environment
