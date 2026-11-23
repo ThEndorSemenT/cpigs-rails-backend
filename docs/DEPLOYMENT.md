@@ -96,7 +96,14 @@ RAILS_ENV=production
 REDIS_URL=redis://localhost:6379/0
 OPENAI_API_KEY=your_openai_key_here
 CPIGS_NEWS_BOT_DATABASE_PASSWORD=your_db_password_here
+
+# Optional: simulation mode (no chain, NFTs from the simulated_nfts table).
+# Must be set for BOTH Puma and Sidekiq (they load the same env file), otherwise
+# the Sidekiq worker's NotifyResultJob would still call the result API.
+# SIMULATION_MODE=true
+# SIMULATION_COLLECTION=cpigs-collection-879234287
 ```
+See `docs/SIMULATION.md` for seeding cards after enabling it.
 
 #### master.key
 Copy `config/master.key` from your local machine to the VPS:

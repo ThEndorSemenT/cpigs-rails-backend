@@ -48,11 +48,19 @@ The same Redis instance used by Sidekiq can be reused.
 ---
 
 ### CPU vs-CPU move resolution is incomplete
-**File:** `app/jobs/matchmaking/cpu_fallback_job.rb`
+**Files:** `app/jobs/matchmaking/cpu_fallback_job.rb`, `app/games/games/logic_engine.rb`
 
-CPU moves are stored in `game_session.metadata["cpu_moves"]` but `Games::SubmitMove` never reads them. When `all_moves_submitted?` is called on a vs-CPU session it only checks `player1`'s moves — the engine's `player2_or_cpu` returns `nil` for vs-CPU games and the score for the CPU side is always 0.
+CPU moves are stored in `game_session.metadata["cpu_moves"]` but `Games::SubmitMove` never reads them. When `all_moves_submitted?` is called on a vs-CPU session it only checks `player1`'s moves — the engine's `player2_or_cpu` returns `nil` for vs-CPU games, and `resolve!` then calls `score_for(nil, player1)` → `move_payload(nil, …)` → `nil.id` raises `NoMethodError`. The CPU cards are also `cpu_card_N` placeholders with random `burn_power`.
 
-**Required work:** When a session is `is_vs_cpu`, `Games::SubmitMove` (or the engine) should inject the CPU's pre-generated moves from metadata before checking `all_moves_submitted?` and computing scores.
+**Required work / planned direction (see `docs/SIMULATION.md`, "Bot player"):** do *not* patch the `nil` CPU path. Make the CPU a real `Player` (`BOT_WALLET_ADDRESS`) holding cards in `simulated_nfts`, set it as `player2`, and have the fallback job submit its moves through `Games::SubmitMove`. Then `player2_or_cpu`, `cpu_moves` and `generate_cpu_cards` can be deleted.
+
+---
+
+### Simulation mode follow-ups
+Not done in the simulation ticket (`docs/SIMULATION.md`):
+- `simulated_nfts.status` is never updated after a game (`locked` / `lost` are unused); cards are not consumed or leveled.
+- Card selection checks ownership, `available` status and stored `burn_power`, but there is no per-session locking of cards.
+- The catalog `config/simulation/collections/cpigs-collection-879234287.yml` holds placeholder tokens, not the real collection.
 
 ---
 
