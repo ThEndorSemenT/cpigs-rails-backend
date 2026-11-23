@@ -97,13 +97,13 @@ REDIS_URL=redis://localhost:6379/0
 OPENAI_API_KEY=your_openai_key_here
 CPIGS_NEWS_BOT_DATABASE_PASSWORD=your_db_password_here
 
-# Optional: simulation mode (no chain, NFTs from the simulated_nfts table).
-# Must be set for BOTH Puma and Sidekiq (they load the same env file), otherwise
-# the Sidekiq worker's NotifyResultJob would still call the result API.
-# SIMULATION_MODE=true
+# Optional: allow clients to request simulation ("test mode", no chain). Defaults to
+# false in production. The frontend decides per request (X-Simulation: on); the
+# backend only obeys when this is true. Set it for both Puma and Sidekiq (same env file).
+# SIMULATION_ALLOWED=true
 # SIMULATION_COLLECTION=cpigs-collection-879234287
 ```
-See `docs/SIMULATION.md` for seeding cards after enabling it.
+See `docs/SIMULATION.md` for seeding cards and the isolation rules. The nginx/proxy in front must pass the `X-Simulation` header and the `/cable` query string unchanged.
 
 #### master.key
 Copy `config/master.key` from your local machine to the VPS:

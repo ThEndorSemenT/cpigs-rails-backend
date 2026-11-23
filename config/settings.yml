@@ -16,10 +16,10 @@ default: &default
     # TODO: move to Rails credentials (rails credentials:edit) — requires TTY.
     result_api_key: <%= ENV.fetch("GAME_RESULT_API_KEY", nil) %>
 
-  # Simulation mode: NFT ownership comes from the simulated_nfts table and every
-  # chain touchpoint (result notification, RPC proxy) is disabled. Off by default.
+  # Simulation: whether clients MAY request simulation (X-Simulation: on).
+  # Default: allowed in development/test, NOT allowed in production.
   simulation:
-    enabled: <%= ENV.fetch("SIMULATION_MODE", "false") %>
+    allowed: <%= ENV.fetch("SIMULATION_ALLOWED", Rails.env.production? ? "false" : "true") %>
     collection: <%= ENV.fetch("SIMULATION_COLLECTION", "cpigs-collection-879234287") %>
 
 development:

@@ -31,10 +31,12 @@ class GameSession < ApplicationRecord
 
   # Find open session for this game_type or create a new one.
   # Uses SELECT FOR UPDATE SKIP LOCKED to avoid race conditions.
-  def self.find_or_create_for_matchmaking(player:, game_type:)
+  # Simulated and real players never share a pool.
+  def self.find_or_create_for_matchmaking(player:, game_type:, simulation: false)
     transaction do
       open_session = waiting
         .for_game_type(game_type)
+        .where(simulation: simulation)
         .where.not(player1_id: player.id)
         .lock("FOR UPDATE SKIP LOCKED")
         .first
@@ -46,6 +48,7 @@ class GameSession < ApplicationRecord
         create!(
           game_type:  game_type,
           player1:    player,
+          simulation: simulation,
           status:     "waiting",
           expires_at: MATCHMAKING_TIMEOUT_SECONDS.seconds.from_now
         )

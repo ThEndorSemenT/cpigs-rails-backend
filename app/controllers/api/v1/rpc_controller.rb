@@ -7,7 +7,7 @@ module Api
       before_action :block_in_simulation!
 
       def polygon
-        Simulation::Guard.ensure_chain_allowed!
+        Simulation::Guard.ensure_chain_allowed!(Current.simulation)
 
         unless rpc_url.present?
           return render json: { error: "RPC endpoint not configured" }, status: :service_unavailable
@@ -25,7 +25,7 @@ module Api
       private
 
       def block_in_simulation!
-        render json: { error: "Chain access is disabled in simulation mode" }, status: :forbidden if Simulation.enabled?
+        render json: { error: "Chain access is disabled for simulated requests" }, status: :forbidden if Current.simulation
       end
 
       def rpc_url

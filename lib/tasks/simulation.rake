@@ -5,8 +5,8 @@ namespace :simulation do
   end
 
   def simulation_guard!
-    if Rails.env.production? && !Simulation.enabled?
-      abort "Refusing to run in production without SIMULATION_MODE=true"
+    if Rails.env.production? && !Simulation.allowed?
+      abort "Refusing to run in production without SIMULATION_ALLOWED=true"
     end
   end
 

@@ -30,8 +30,8 @@ module Games
 
       if engine.all_moves_submitted?
         @session.begin_resolution!
-        if Simulation.enabled?
-          # Simulation: resolve inline so the result is returned in this response.
+        if @session.simulation?
+          # Simulated session: resolve inline so the result is returned in this response.
           Games::ResolveSession.new(@session).call
           Result.new(move: move, resolution_triggered: true, error: nil, game_result: @session.reload.game_result)
         else

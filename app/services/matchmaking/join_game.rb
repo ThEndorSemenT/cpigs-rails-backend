@@ -2,13 +2,16 @@ module Matchmaking
   class JoinGame
     Result = Struct.new(:session, :matched, keyword_init: true)
 
-    def initialize(player:, game_type:)
-      @player    = player
-      @game_type = game_type
+    def initialize(player:, game_type:, simulation: false)
+      @player     = player
+      @game_type  = game_type
+      @simulation = simulation
     end
 
     def call
-      session = GameSession.find_or_create_for_matchmaking(player: @player, game_type: @game_type)
+      session = GameSession.find_or_create_for_matchmaking(
+        player: @player, game_type: @game_type, simulation: @simulation
+      )
 
       if session.player2_id.present? || session.is_vs_cpu?
         Result.new(session: session, matched: true)

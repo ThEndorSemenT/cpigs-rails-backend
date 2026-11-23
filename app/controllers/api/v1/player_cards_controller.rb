@@ -1,6 +1,6 @@
 module Api
   module V1
-    # GET /api/v1/players/:wallet_address/cards  (simulation mode only)
+    # GET /api/v1/players/:wallet_address/cards  (simulated requests only: X-Simulation: on)
     class PlayerCardsController < ApiController
       before_action :require_simulation!
 
@@ -23,7 +23,7 @@ module Api
       private
 
       def require_simulation!
-        render_error("Not found", status: :not_found) unless Simulation.enabled?
+        render_error("Not found", status: :not_found) unless Current.simulation
       end
     end
   end

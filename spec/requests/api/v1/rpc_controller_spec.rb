@@ -30,11 +30,19 @@ RSpec.describe Api::V1::RpcController, type: :request do
       )
     end
 
-    context "in simulation mode", :simulation do
+    context "for a simulated request" do
       it "returns 403 and never calls Alchemy, even for eth_sendRawTransaction" do
         body = { jsonrpc: "2.0", method: "eth_sendRawTransaction", params: ["0xdead"], id: 1 }.to_json
-        post api_v1_rpc_polygon_path, params: body, headers: { "Content-Type" => "application/json" }
+        post api_v1_rpc_polygon_path, params: body, headers: sim_headers("Content-Type" => "application/json")
 
+        expect(response).to have_http_status(:forbidden)
+        expect(Faraday).not_to have_received(:post)
+      end
+    end
+
+    context "when simulation is requested but not allowed", :simulation_not_allowed do
+      it "returns 403 and never calls Alchemy" do
+        post api_v1_rpc_polygon_path, params: rpc_request_body, headers: sim_headers("Content-Type" => "application/json")
         expect(response).to have_http_status(:forbidden)
         expect(Faraday).not_to have_received(:post)
       end

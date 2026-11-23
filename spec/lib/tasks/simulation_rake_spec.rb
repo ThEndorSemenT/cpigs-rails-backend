@@ -31,13 +31,13 @@ RSpec.describe "simulation rake tasks" do
     expect(SimulatedNft.count).to eq(0)
   end
 
-  it "refuses in production without SIMULATION_MODE" do
+  it "refuses in production when simulation is not allowed", :simulation_not_allowed do
     allow(Rails.env).to receive(:production?).and_return(true)
     expect { run("simulation:assign", wallet, "1") }.to raise_error(SystemExit).and output(/production/).to_stderr
     expect(SimulatedNft.count).to eq(0)
   end
 
-  it "runs in production when simulation is enabled", :simulation do
+  it "runs in production when simulation is allowed" do
     allow(Rails.env).to receive(:production?).and_return(true)
     expect { run("simulation:assign", wallet, "1") }.to output(/Assigned 1\/1/).to_stdout
   end

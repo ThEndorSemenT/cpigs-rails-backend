@@ -66,8 +66,8 @@ module Games
       end
       return false unless well_formed
 
-      # Simulation mode: ownership comes from simulated_nfts, not the client.
-      return true unless Simulation.enabled?
+      # Simulated sessions: ownership comes from simulated_nfts, not the client.
+      return true unless session.simulation?
       Simulation::CardOwnership.valid?(wallet: player.wallet_address, cards: cards.map(&:stringify_keys))
     end
 

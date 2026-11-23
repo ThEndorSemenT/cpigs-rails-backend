@@ -12,8 +12,9 @@ module Blockchain
       return unless result
       return if result.blockchain_status == "notified"
 
-      # Simulation mode: never touch the chain / external result API.
-      if Simulation.enabled?
+      # Simulated sessions never touch the chain / external result API.
+      # Jobs run outside the request: the session is the source of truth.
+      if result.game_session.simulation?
         result.skip_blockchain!
         return
       end
@@ -27,6 +28,8 @@ module Blockchain
         result.skip_blockchain!
         return
       end
+
+      Simulation::Guard.ensure_chain_allowed!(result.game_session)
 
       conn = Faraday.new do |f|
         f.request :json

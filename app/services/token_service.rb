@@ -4,8 +4,11 @@ class TokenService
   ALGORITHM = "HS256"
 
   class << self
-    def encode(wallet_address, exp: 24.hours.from_now)
+    # sim: true marks a token issued WITHOUT wallet-ownership proof (/auth/simulate).
+    # Such tokens are only accepted for simulated requests and simulated sessions.
+    def encode(wallet_address, exp: 24.hours.from_now, sim: false)
       payload = { wallet: wallet_address.downcase, exp: exp.to_i }
+      payload[:sim] = true if sim
       data = Base64.urlsafe_encode64(payload.to_json, padding: false)
       sig = OpenSSL::HMAC.hexdigest("SHA256", secret, data)
       "#{data}.#{sig}"

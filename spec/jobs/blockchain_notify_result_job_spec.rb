@@ -1,7 +1,8 @@
 require "rails_helper"
 
 RSpec.describe Blockchain::NotifyResultJob do
-  let(:session) { create(:game_session) }
+  let(:simulated) { false }
+  let(:session) { create(:game_session, simulation: simulated) }
   let!(:game_result) { GameResult.create!(game_session: session, winner: session.player1, blockchain_status: "pending") }
 
   before do
@@ -9,10 +10,20 @@ RSpec.describe Blockchain::NotifyResultJob do
     allow(ENV).to receive(:fetch).and_call_original
   end
 
-  it "skips the blockchain and never builds a Faraday connection in simulation", :simulation do
-    described_class.perform_now(game_result.id)
-    expect(game_result.reload.blockchain_status).to eq("skipped")
-    expect(Faraday).not_to have_received(:new)
+  context "simulated session" do
+    let(:simulated) { true }
+
+    it "skips the blockchain and never builds a Faraday connection" do
+      described_class.perform_now(game_result.id)
+      expect(game_result.reload.blockchain_status).to eq("skipped")
+      expect(Faraday).not_to have_received(:new)
+    end
+
+    it "skips even if the environment no longer allows simulation (session is the source of truth)", :simulation_not_allowed do
+      described_class.perform_now(game_result.id)
+      expect(game_result.reload.blockchain_status).to eq("skipped")
+      expect(Faraday).not_to have_received(:new)
+    end
   end
 
   context "real mode (regression)" do

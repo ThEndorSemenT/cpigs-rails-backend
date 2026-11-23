@@ -7,7 +7,7 @@
 class GameSessionChannel < ApplicationCable::Channel
   def subscribed
     session = GameSession.find_by_param(params[:session_id])
-    return reject if session.nil? || !participant?(session)
+    return reject if session.nil? || !session_mode_matches?(session) || !participant?(session)
 
     stream_from "game_session_#{session.id}"
     transmit({ type: "session_state", session: session_state(session) })

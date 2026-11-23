@@ -50,7 +50,12 @@ module Api
 
       def load_session
         @session = GameSession.find_by_param(params[:id] || params[:game_session_id])
-        render_error("Session not found", status: :not_found) unless @session
+        # A session is only reachable by requests of the same mode. This is what
+        # stops `sim` tokens (no wallet proof) from touching real sessions, and
+        # real-mode requests from touching simulated ones.
+        unless @session && @session.simulation? == Current.simulation
+          render_error("Session not found", status: :not_found)
+        end
       end
 
       def session_json
@@ -58,6 +63,7 @@ module Api
           id:         @session.to_param,
           public_id:  @session.public_id,
           game_type:  @session.game_type,
+          simulation: @session.simulation?,
           status:     @session.status,
           is_vs_cpu:  @session.is_vs_cpu,
           player1:    @session.player1.wallet_address,

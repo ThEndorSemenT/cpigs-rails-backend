@@ -5,7 +5,8 @@ RSpec.describe Games::SubmitMove do
 
   let(:p1)      { create(:player) }
   let(:p2)      { create(:player) }
-  let(:session) { create(:game_session, player1: p1, player2: p2, status: "active") }
+  let(:simulated) { true }
+  let(:session) { create(:game_session, player1: p1, player2: p2, status: "active", simulation: simulated) }
 
   def cards_for(player, powers)
     powers.each_with_index.map do |bp, i|
@@ -18,7 +19,7 @@ RSpec.describe Games::SubmitMove do
     described_class.new(session: session, player: player, move_type: type, payload: payload).call
   end
 
-  context "simulation mode", :simulation do
+  context "simulated session" do
     it "rejects cards the wallet does not own" do
       foreign = cards_for(p2, [1, 2, 3])
       expect(submit(p1, "select_cards", { "cards" => foreign }).error).to match(/Invalid move payload/)
@@ -52,7 +53,9 @@ RSpec.describe Games::SubmitMove do
     end
   end
 
-  context "real mode (regression)" do
+  context "real session (regression)" do
+    let(:simulated) { false }
+
     it "does not check ownership and defers resolution to the job" do
       c1 = [{ "token_id" => "a", "burn_power" => 1 }, { "token_id" => "b", "burn_power" => 2 }, { "token_id" => "c", "burn_power" => 3 }]
       expect(submit(p1, "select_cards", { "cards" => c1 }).error).to be_nil

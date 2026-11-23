@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_161620) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_171359) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -91,6 +91,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_161620) do
     t.bigint "player2_id"
     t.string "public_id", limit: 15, null: false
     t.datetime "resolved_at"
+    t.boolean "simulation", default: false, null: false
     t.string "status", default: "waiting", null: false
     t.datetime "updated_at", null: false
     t.bigint "winner_id"
@@ -99,6 +100,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_161620) do
     t.index ["player1_id"], name: "index_game_sessions_on_player1_id"
     t.index ["player2_id"], name: "index_game_sessions_on_player2_id"
     t.index ["public_id"], name: "index_game_sessions_on_public_id", unique: true
+    t.index ["status", "game_type", "simulation"], name: "index_game_sessions_matchmaking_pool"
     t.index ["status"], name: "index_game_sessions_on_status"
   end
 
