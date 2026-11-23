@@ -2,6 +2,8 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
     origins ENV.fetch("ALLOWED_ORIGINS", "http://localhost:3000,http://localhost:3001").split(",")
     resource "/cable", headers: :any, methods: %i[get post options], credentials: true
+    # headers: :any already permits the client-sent `X-Simulation` header
+    # (REST signal for simulation mode); the ActionCable handshake uses ?simulation=on.
     resource "/api/*",
              headers: :any,
              methods: %i[get post put patch delete options head],

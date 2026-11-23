@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_000002) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_171359) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -91,6 +91,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_000002) do
     t.bigint "player2_id"
     t.string "public_id", limit: 15, null: false
     t.datetime "resolved_at"
+    t.boolean "simulation", default: false, null: false
     t.string "status", default: "waiting", null: false
     t.datetime "updated_at", null: false
     t.bigint "winner_id"
@@ -99,6 +100,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_000002) do
     t.index ["player1_id"], name: "index_game_sessions_on_player1_id"
     t.index ["player2_id"], name: "index_game_sessions_on_player2_id"
     t.index ["public_id"], name: "index_game_sessions_on_public_id", unique: true
+    t.index ["status", "game_type", "simulation"], name: "index_game_sessions_matchmaking_pool"
     t.index ["status"], name: "index_game_sessions_on_status"
   end
 
@@ -122,5 +124,20 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_000002) do
     t.string "wallet_address", null: false
     t.index ["nonce"], name: "index_players_on_nonce"
     t.index ["wallet_address"], name: "index_players_on_wallet_address", unique: true
+  end
+
+  create_table "simulated_nfts", force: :cascade do |t|
+    t.integer "burn_power", default: 0, null: false
+    t.string "collection", null: false
+    t.datetime "created_at", null: false
+    t.string "image_url"
+    t.jsonb "metadata", default: {}, null: false
+    t.string "name"
+    t.string "status", default: "available", null: false
+    t.string "token_id", null: false
+    t.datetime "updated_at", null: false
+    t.string "wallet_address", null: false
+    t.index ["wallet_address", "collection", "token_id"], name: "index_simulated_nfts_on_wallet_collection_token", unique: true
+    t.index ["wallet_address"], name: "index_simulated_nfts_on_wallet_address"
   end
 end

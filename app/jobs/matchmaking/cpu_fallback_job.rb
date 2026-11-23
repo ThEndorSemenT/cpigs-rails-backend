@@ -1,5 +1,8 @@
 # Fires MATCHMAKING_TIMEOUT_SECONDS after session creation.
 # If still waiting → fall back to CPU, inject CPU moves into metadata, notify P1.
+# TODO(simulation/bot): for `session.simulation?` use a bot Player (BOT_WALLET_ADDRESS)
+# holding cards from Simulation::AssignCards and submit its moves via
+# Games::SubmitMove — see docs/SIMULATION.md. Do not read config/Current here.
 module Matchmaking
   class CpuFallbackJob < ApplicationJob
     queue_as :matchmaking

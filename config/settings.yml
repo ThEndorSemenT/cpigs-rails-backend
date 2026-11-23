@@ -1,6 +1,7 @@
 # config/settings.yml
 # Application-wide settings. Only settings actually read from code belong here —
-# the sole consumer is Blockchain::NotifyResultJob (game section). Values come
+# consumers: Blockchain::NotifyResultJob (game section) and
+# config/initializers/simulation.rb (simulation section). Values come
 # from env vars; per-environment overrides are handled by each environment's
 # own .env, not by sections in this file.
 #
@@ -14,6 +15,12 @@ default: &default
     # Auth key for the game result API.
     # TODO: move to Rails credentials (rails credentials:edit) — requires TTY.
     result_api_key: <%= ENV.fetch("GAME_RESULT_API_KEY", nil) %>
+
+  # Simulation: whether clients MAY request simulation (X-Simulation: on).
+  # Default: allowed in development/test, NOT allowed in production.
+  simulation:
+    allowed: <%= ENV.fetch("SIMULATION_ALLOWED", Rails.env.production? ? "false" : "true") %>
+    collection: <%= ENV.fetch("SIMULATION_COLLECTION", "cpigs-collection-879234287") %>
 
 development:
   <<: *default

@@ -12,6 +12,13 @@ module Blockchain
       return unless result
       return if result.blockchain_status == "notified"
 
+      # Simulated sessions never touch the chain / external result API.
+      # Jobs run outside the request: the session is the source of truth.
+      if result.game_session.simulation?
+        result.skip_blockchain!
+        return
+      end
+
       settings = Rails.application.config_for(:settings) rescue {}
       api_url  = settings.dig("game", "result_api_url") || ENV.fetch("GAME_RESULT_API_URL", nil)
       api_key  = settings.dig("game", "result_api_key") || ENV.fetch("GAME_RESULT_API_KEY", nil)
@@ -21,6 +28,8 @@ module Blockchain
         result.skip_blockchain!
         return
       end
+
+      Simulation::Guard.ensure_chain_allowed!(result.game_session)
 
       conn = Faraday.new do |f|
         f.request :json

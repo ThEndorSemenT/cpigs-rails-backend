@@ -15,7 +15,9 @@ Rails.application.routes.draw do
     namespace :v1 do
       get  "health",                               to: "health#show"
       post "auth/verify",                          to: "auth/sessions#verify"
+      post "auth/simulate",                        to: "auth/simulations#create"
       get  "players/:wallet_address/nonce",        to: "players#nonce"
+      get  "players/:wallet_address/cards",        to: "player_cards#index"
       get  "players/:wallet_address",              to: "players#show"
       post "matchmaking",                          to: "matchmaking#create"
       resources :game_sessions, only: %i[show] do

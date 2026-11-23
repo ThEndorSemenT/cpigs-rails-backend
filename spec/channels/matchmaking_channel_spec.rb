@@ -57,3 +57,23 @@ RSpec.describe MatchmakingChannel, type: :channel do
     end
   end
 end
+
+RSpec.describe MatchmakingChannel, "simulation isolation", type: :channel do
+  let(:real_session) { create(:game_session, status: "waiting") }
+  let(:sim_session)  { create(:game_session, status: "waiting", simulation: true) }
+
+  it "accepts a simulated connection only for simulated sessions" do
+    stub_connection(simulation: true)
+    subscribe(token: sim_session.matchmaking_token)
+    expect(subscription).to be_confirmed
+
+    subscribe(token: real_session.matchmaking_token)
+    expect(subscription).to be_rejected
+  end
+
+  it "rejects a real connection for a simulated session" do
+    stub_connection(simulation: false)
+    subscribe(token: sim_session.matchmaking_token)
+    expect(subscription).to be_rejected
+  end
+end

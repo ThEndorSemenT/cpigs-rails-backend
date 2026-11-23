@@ -43,6 +43,8 @@ services:
       DATABASE_URL: postgresql://cpigs:cpigs_password@postgres/cpigs_news_bot_development
       REDIS_URL: redis://redis:6379/0
       ALLOWED_ORIGINS: https://cpigstest.umaboaquestao.pt
+      SIMULATION_ALLOWED: "true"
+      SIMULATION_COLLECTION: cpigs-collection-879234287
     ports:
       - "3000:3000"
     volumes:
@@ -65,6 +67,9 @@ services:
     environment:
       DATABASE_URL: postgresql://cpigs:cpigs_password@postgres/cpigs_news_bot_development
       REDIS_URL: redis://redis:6379/0
+      # Must match app: NotifyResultJob runs here and must not call the chain.
+      SIMULATION_ALLOWED: "true"
+      SIMULATION_COLLECTION: cpigs-collection-879234287
     volumes:
       - .:/rails
 

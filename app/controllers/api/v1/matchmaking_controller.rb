@@ -8,7 +8,9 @@ module Api
 
       def create
         game_type = params.require(:game_type)
-        result = Matchmaking::JoinGame.new(player: current_player, game_type: game_type).call
+        result = Matchmaking::JoinGame.new(
+          player: current_player, game_type: game_type, simulation: Current.simulation
+        ).call
         session = result.session
         render json: {
           session_id:        session.to_param,
@@ -17,7 +19,8 @@ module Api
           status:            session.status,
           matched:           result.matched,
           vs_cpu:            session.is_vs_cpu,
-          game_type:         session.game_type
+          game_type:         session.game_type,
+          simulation:        session.simulation?
         }, status: :created
       rescue ArgumentError => e
         render_error e.message

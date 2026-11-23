@@ -3,7 +3,7 @@
 class MatchmakingChannel < ApplicationCable::Channel
   def subscribed
     session = GameSession.find_by(matchmaking_token: params[:token])
-    return reject unless session
+    return reject unless session && session_mode_matches?(session)
 
     stream_from "matchmaking_#{params[:token]}"
 

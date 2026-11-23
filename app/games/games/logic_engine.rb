@@ -12,7 +12,7 @@ module Games
 
     def valid_move?(player, move_type, payload)
       case move_type
-      when MOVE_SELECT_CARDS then valid_select_cards?(payload)
+      when MOVE_SELECT_CARDS then valid_select_cards?(player, payload)
       when MOVE_GUESS_CARD   then valid_guess_card?(payload)
       else false
       end
@@ -57,13 +57,18 @@ module Games
     def active_players;  [player1, player2_or_cpu].compact end
     def player2_or_cpu;  session.is_vs_cpu ? nil : player2 end
 
-    def valid_select_cards?(payload)
+    def valid_select_cards?(player, payload)
       cards = payload.try(:[], "cards") || payload.try(:[], :cards)
       return false unless cards.is_a?(Array) && cards.size == REQUIRED_CARD_COUNT
-      cards.all? do |card|
+      well_formed = cards.all? do |card|
         card.is_a?(Hash) && card.key?("token_id") &&
           card["burn_power"].is_a?(Integer) && card["burn_power"] >= 0
       end
+      return false unless well_formed
+
+      # Simulated sessions: ownership comes from simulated_nfts, not the client.
+      return true unless session.simulation?
+      Simulation::CardOwnership.valid?(wallet: player.wallet_address, cards: cards.map(&:stringify_keys))
     end
 
     def valid_guess_card?(payload)

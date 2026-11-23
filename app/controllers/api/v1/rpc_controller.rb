@@ -4,7 +4,11 @@ module Api
       # Note: No need to skip verify_authenticity_token since ApiController
       # inherits from ActionController::API which doesn't include CSRF protection
 
+      before_action :block_in_simulation!
+
       def polygon
+        Simulation::Guard.ensure_chain_allowed!(Current.simulation)
+
         unless rpc_url.present?
           return render json: { error: "RPC endpoint not configured" }, status: :service_unavailable
         end
@@ -19,6 +23,10 @@ module Api
       end
 
       private
+
+      def block_in_simulation!
+        render json: { error: "Chain access is disabled for simulated requests" }, status: :forbidden if Current.simulation
+      end
 
       def rpc_url
         ENV["ALCHEMY_POLYGON_RPC_URL"].presence
