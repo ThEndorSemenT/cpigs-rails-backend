@@ -25,11 +25,11 @@ RSpec.describe MatchmakingChannel, type: :channel do
 
       expect(subscription).to be_confirmed
       expect(subscription).to have_stream_from("matchmaking_#{session.matchmaking_token}")
-      expect(transmissions.last).to eq(
-        "type" => "matched",
-        "vs_cpu" => false,
-        "session_id" => session.public_id
+      expect(transmissions.last).to include(
+        "type" => "matched", "vs_cpu" => false,
+        "session_id" => session.public_id, "public_id" => session.public_id
       )
+      expect(transmissions.last).to include("move_deadline_at", "server_time")
     end
 
     it "transmits matched event for CPU fallback" do
@@ -37,11 +37,19 @@ RSpec.describe MatchmakingChannel, type: :channel do
 
       subscribe(token: session.matchmaking_token)
 
-      expect(transmissions.last).to eq(
-        "type" => "matched",
-        "vs_cpu" => true,
-        "session_id" => session.public_id
+      expect(transmissions.last).to include(
+        "type" => "matched", "vs_cpu" => true, "session_id" => session.public_id
       )
+    end
+
+    it "transmits expired for expired and cancelled sessions" do
+      session.update!(status: "expired")
+      subscribe(token: session.matchmaking_token)
+      expect(transmissions.last).to include("type" => "expired")
+
+      session.update!(status: "cancelled")
+      subscribe(token: session.matchmaking_token)
+      expect(transmissions.last).to include("type" => "expired", "reason" => "cancelled")
     end
   end
 

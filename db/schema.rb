@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_11_23_171359) do
+ActiveRecord::Schema[8.1].define(version: 2026_11_23_190000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -87,6 +87,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_171359) do
     t.boolean "is_vs_cpu", default: false, null: false
     t.string "matchmaking_token", null: false
     t.jsonb "metadata", default: {}, null: false
+    t.datetime "move_deadline_at"
     t.bigint "player1_id", null: false
     t.bigint "player2_id"
     t.string "public_id", limit: 15, null: false
@@ -97,9 +98,11 @@ ActiveRecord::Schema[8.1].define(version: 2026_11_23_171359) do
     t.bigint "winner_id"
     t.index ["game_type", "status"], name: "index_game_sessions_on_game_type_and_status"
     t.index ["matchmaking_token"], name: "index_game_sessions_on_matchmaking_token", unique: true
+    t.index ["move_deadline_at"], name: "index_game_sessions_on_open_move_deadline", where: "((status)::text = ANY ((ARRAY['active'::character varying, 'playing'::character varying])::text[]))"
     t.index ["player1_id"], name: "index_game_sessions_on_player1_id"
     t.index ["player2_id"], name: "index_game_sessions_on_player2_id"
     t.index ["public_id"], name: "index_game_sessions_on_public_id", unique: true
+    t.index ["status", "expires_at"], name: "index_game_sessions_on_status_and_expires_at"
     t.index ["status", "game_type", "simulation"], name: "index_game_sessions_matchmaking_pool"
     t.index ["status"], name: "index_game_sessions_on_status"
   end

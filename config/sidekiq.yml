@@ -1,0 +1,11 @@
+# Sidekiq reads this file automatically (all environments). Every queue used by an
+# ActiveJob must be listed here, otherwise its jobs are enqueued but never run.
+#   default         – news fetch / filter / telegram
+#   matchmaking     – Matchmaking::CpuFallbackJob, Matchmaking::ExpireStaleJob
+#   game_resolution – Games::ResolveSessionJob, Games::MoveDeadlineJob
+#   blockchain      – Blockchain::NotifyResultJob
+:queues:
+  - default
+  - matchmaking
+  - game_resolution
+  - blockchain

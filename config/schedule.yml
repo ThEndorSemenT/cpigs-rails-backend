@@ -16,3 +16,12 @@ news_fetcher:
   # the cron then calls `perform_async` on an ActiveJob and fails every tick.
   active_job: true
   description: "Fetch corruption news from NewsAPI (30 min interval, ~96 req/day for 2 languages)"
+
+# Safety net for Matchmaking::CpuFallbackJob: closes waiting sessions past expires_at
+# and active sessions past move_deadline_at. Idempotent. Needs the `matchmaking` queue.
+matchmaking_sweeper:
+  cron: "* * * * *"
+  class: Matchmaking::ExpireStaleJob
+  queue: matchmaking
+  active_job: true
+  description: "Expire stale matchmaking sessions and overdue moves (every minute)"

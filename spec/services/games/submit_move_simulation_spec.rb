@@ -19,6 +19,16 @@ RSpec.describe Games::SubmitMove do
     described_class.new(session: session, player: player, move_type: type, payload: payload).call
   end
 
+  context "move deadline" do
+    it "rejects moves after move_deadline_at and expires the session" do
+      session.update!(move_deadline_at: 1.second.ago)
+      mine = cards_for(p1, [1, 2, 3])
+
+      expect(submit(p1, "select_cards", { "cards" => mine }).error).to eq("Move deadline passed")
+      expect(session.reload.status).to eq("expired")
+    end
+  end
+
   context "simulated session" do
     it "rejects cards the wallet does not own" do
       foreign = cards_for(p2, [1, 2, 3])

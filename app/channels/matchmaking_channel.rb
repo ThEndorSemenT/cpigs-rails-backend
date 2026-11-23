@@ -1,5 +1,7 @@
 # Subscribe: { channel: "MatchmakingChannel", token: "<matchmaking_token>" }
-# Broadcasts: "matched" { vs_cpu: bool, session_id: int }
+# Broadcasts (see docs/MATCHMAKING.md):
+#   matched { vs_cpu, session_id, public_id, move_deadline_at, server_time }
+#   expired { reason }
 class MatchmakingChannel < ApplicationCable::Channel
   def subscribed
     session = GameSession.find_by(matchmaking_token: params[:token])
@@ -7,9 +9,14 @@ class MatchmakingChannel < ApplicationCable::Channel
 
     stream_from "matchmaking_#{params[:token]}"
 
-    # Handle reconnect: immediately transmit if already matched
-    if session.status != "waiting"
-      transmit({ type: "matched", vs_cpu: session.is_vs_cpu, session_id: session.to_param })
+    # Handle reconnect: replay the current state if no longer waiting
+    case session.status
+    when "waiting"
+      nil
+    when "expired", "cancelled"
+      transmit(session.expired_payload)
+    else
+      transmit(session.matched_payload)
     end
   end
 

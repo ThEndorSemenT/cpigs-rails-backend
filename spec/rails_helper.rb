@@ -19,6 +19,6 @@ RSpec.configure do |config|
 
   ActiveJob::Base.queue_adapter = :test
 
-  # Force async adapter for Action Cable in test (avoids redis gem dependency)
-  ActionCable.server.config.cable = { "adapter" => "async" }
+  # Test adapter for Action Cable (no redis; enables have_broadcasted_to)
+  ActionCable.server.config.cable = { "adapter" => "test" }
 end

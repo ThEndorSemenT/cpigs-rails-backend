@@ -36,6 +36,16 @@ RSpec.describe "Api::V1::Matchmaking", type: :request do
         expect(body["game_type"]).to eq("logic")
       end
 
+      it "includes the server-side timing contract" do
+        post_matchmaking
+
+        body = JSON.parse(response.body)
+        expect(body["matchmaking_timeout_seconds"]).to eq(GameSession::MATCHMAKING_TIMEOUT_SECONDS)
+        expect(Time.iso8601(body["server_time"])).to be_within(5.seconds).of(Time.current)
+        expect(Time.iso8601(body["expires_at"]) - Time.iso8601(body["server_time"]))
+          .to be_within(2).of(GameSession::MATCHMAKING_TIMEOUT_SECONDS)
+      end
+
       it "matches into an existing waiting session" do
         other_player = create(:player)
         waiting = create(:game_session, game_type: "logic", status: "waiting", player1: other_player)
