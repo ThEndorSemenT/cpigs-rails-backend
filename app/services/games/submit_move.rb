@@ -13,6 +13,11 @@ module Games
       unless %w[active playing].include?(@session.status)
         return error("Session is not accepting moves (status: #{@session.status})")
       end
+      if @session.move_deadline_at && Time.current > @session.move_deadline_at
+        # Deadline passed: reject the move and close the session (forfeit).
+        @session.expire!(reason: "move_timeout", from: %w[active playing])
+        return error("Move deadline passed")
+      end
       unless participant?
         return error("Player is not a participant in this session")
       end

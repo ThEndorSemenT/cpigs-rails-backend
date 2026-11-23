@@ -193,6 +193,17 @@ systemctl --user enable cpigs-backend_sidekiq_staging
 systemctl --user start cpigs-backend_sidekiq_staging
 ```
 
+Queues are defined in `config/sidekiq.yml` (`default`, `matchmaking`, `game_resolution`,
+`blockchain`) — no `-q` flags needed in the unit. Sidekiq-cron loads `config/schedule.yml`
+on startup (includes the per-minute matchmaking sweeper). `REDIS_URL` must be set in
+`shared/.env` for both Puma (Action Cable) and Sidekiq. Verify after restart:
+
+```bash
+journalctl --user -u cpigs-backend_sidekiq_staging -n 30 | grep -i "queues\|Starting"
+cd /var/www/cpigs-backend/current && bundle exec rails runner -e production \
+  'puts Sidekiq::Queue.all.map { |q| [q.name, q.size].inspect }; puts Sidekiq::Cron::Job.all.map(&:name)'
+```
+
 Sidekiq does **not** restart automatically on deploy — run this after each deploy
 when code changed, or rely on the `Restart=always` policy for crash recovery.
 

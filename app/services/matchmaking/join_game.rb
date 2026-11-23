@@ -16,10 +16,14 @@ module Matchmaking
       if session.player2_id.present? || session.is_vs_cpu?
         Result.new(session: session, matched: true)
       else
-        # New session — schedule the CPU fallback timer
-        Matchmaking::CpuFallbackJob.set(
-          wait: GameSession::MATCHMAKING_TIMEOUT_SECONDS.seconds
-        ).perform_later(session.id)
+        # Newly created session — schedule the timeout trigger. A re-join that returned
+        # the player's existing waiting session already has one scheduled (the sweeper
+        # covers it otherwise).
+        if session.previously_new_record?
+          Matchmaking::CpuFallbackJob.set(
+            wait_until: session.expires_at
+          ).perform_later(session.id)
+        end
         Result.new(session: session, matched: false)
       end
     end

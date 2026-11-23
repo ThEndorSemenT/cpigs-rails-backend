@@ -21,7 +21,7 @@ module Api
           vs_cpu:            session.is_vs_cpu,
           game_type:         session.game_type,
           simulation:        session.simulation?
-        }, status: :created
+        }.merge(session.timing_json), status: :created
       rescue ArgumentError => e
         render_error e.message
       rescue ActiveRecord::RecordInvalid => e

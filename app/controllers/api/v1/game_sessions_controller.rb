@@ -69,7 +69,7 @@ module Api
           player1:    @session.player1.wallet_address,
           player2:    @session.player2&.wallet_address,
           created_at: @session.created_at
-        }
+        }.merge(@session.timing_json)
       end
     end
   end
