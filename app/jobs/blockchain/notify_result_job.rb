@@ -12,6 +12,12 @@ module Blockchain
       return unless result
       return if result.blockchain_status == "notified"
 
+      # Simulation mode: never touch the chain / external result API.
+      if Simulation.enabled?
+        result.skip_blockchain!
+        return
+      end
+
       settings = Rails.application.config_for(:settings) rescue {}
       api_url  = settings.dig("game", "result_api_url") || ENV.fetch("GAME_RESULT_API_URL", nil)
       api_key  = settings.dig("game", "result_api_key") || ENV.fetch("GAME_RESULT_API_KEY", nil)

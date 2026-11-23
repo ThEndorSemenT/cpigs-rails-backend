@@ -1,0 +1,121 @@
+# Simulation catalog (no chain). Fields: token_id, name, image, burn_power
+- token_id: "1"
+  name: "Corrupted Pig #1"
+  image: "/simulation/cpigs-collection-879234287/1.png"
+  burn_power: 7
+- token_id: "2"
+  name: "Corrupted Pig #2"
+  image: "/simulation/cpigs-collection-879234287/2.png"
+  burn_power: 4
+- token_id: "3"
+  name: "Corrupted Pig #3"
+  image: "/simulation/cpigs-collection-879234287/3.png"
+  burn_power: 13
+- token_id: "4"
+  name: "Corrupted Pig #4"
+  image: "/simulation/cpigs-collection-879234287/4.png"
+  burn_power: 15
+- token_id: "5"
+  name: "Corrupted Pig #5"
+  image: "/simulation/cpigs-collection-879234287/5.png"
+  burn_power: 11
+- token_id: "6"
+  name: "Corrupted Pig #6"
+  image: "/simulation/cpigs-collection-879234287/6.png"
+  burn_power: 8
+- token_id: "7"
+  name: "Corrupted Pig #7"
+  image: "/simulation/cpigs-collection-879234287/7.png"
+  burn_power: 13
+- token_id: "8"
+  name: "Corrupted Pig #8"
+  image: "/simulation/cpigs-collection-879234287/8.png"
+  burn_power: 5
+- token_id: "9"
+  name: "Corrupted Pig #9"
+  image: "/simulation/cpigs-collection-879234287/9.png"
+  burn_power: 7
+- token_id: "10"
+  name: "Corrupted Pig #10"
+  image: "/simulation/cpigs-collection-879234287/10.png"
+  burn_power: 10
+- token_id: "11"
+  name: "Corrupted Pig #11"
+  image: "/simulation/cpigs-collection-879234287/11.png"
+  burn_power: 3
+- token_id: "12"
+  name: "Corrupted Pig #12"
+  image: "/simulation/cpigs-collection-879234287/12.png"
+  burn_power: 7
+- token_id: "13"
+  name: "Corrupted Pig #13"
+  image: "/simulation/cpigs-collection-879234287/13.png"
+  burn_power: 11
+- token_id: "14"
+  name: "Corrupted Pig #14"
+  image: "/simulation/cpigs-collection-879234287/14.png"
+  burn_power: 11
+- token_id: "15"
+  name: "Corrupted Pig #15"
+  image: "/simulation/cpigs-collection-879234287/15.png"
+  burn_power: 8
+- token_id: "16"
+  name: "Corrupted Pig #16"
+  image: "/simulation/cpigs-collection-879234287/16.png"
+  burn_power: 5
+- token_id: "17"
+  name: "Corrupted Pig #17"
+  image: "/simulation/cpigs-collection-879234287/17.png"
+  burn_power: 4
+- token_id: "18"
+  name: "Corrupted Pig #18"
+  image: "/simulation/cpigs-collection-879234287/18.png"
+  burn_power: 8
+- token_id: "19"
+  name: "Corrupted Pig #19"
+  image: "/simulation/cpigs-collection-879234287/19.png"
+  burn_power: 8
+- token_id: "20"
+  name: "Corrupted Pig #20"
+  image: "/simulation/cpigs-collection-879234287/20.png"
+  burn_power: 3
+- token_id: "21"
+  name: "Corrupted Pig #21"
+  image: "/simulation/cpigs-collection-879234287/21.png"
+  burn_power: 6
+- token_id: "22"
+  name: "Corrupted Pig #22"
+  image: "/simulation/cpigs-collection-879234287/22.png"
+  burn_power: 5
+- token_id: "23"
+  name: "Corrupted Pig #23"
+  image: "/simulation/cpigs-collection-879234287/23.png"
+  burn_power: 2
+- token_id: "24"
+  name: "Corrupted Pig #24"
+  image: "/simulation/cpigs-collection-879234287/24.png"
+  burn_power: 8
+- token_id: "25"
+  name: "Corrupted Pig #25"
+  image: "/simulation/cpigs-collection-879234287/25.png"
+  burn_power: 12
+- token_id: "26"
+  name: "Corrupted Pig #26"
+  image: "/simulation/cpigs-collection-879234287/26.png"
+  burn_power: 14
+- token_id: "27"
+  name: "Corrupted Pig #27"
+  image: "/simulation/cpigs-collection-879234287/27.png"
+  burn_power: 6
+- token_id: "28"
+  name: "Corrupted Pig #28"
+  image: "/simulation/cpigs-collection-879234287/28.png"
+  burn_power: 2
+- token_id: "29"
+  name: "Corrupted Pig #29"
+  image: "/simulation/cpigs-collection-879234287/29.png"
+  burn_power: 12
+- token_id: "30"
+  name: "Corrupted Pig #30"
+  image: "/simulation/cpigs-collection-879234287/30.png"
+  burn_power: 5

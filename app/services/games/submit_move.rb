@@ -1,6 +1,6 @@
 module Games
   class SubmitMove
-    Result = Struct.new(:move, :resolution_triggered, :error, keyword_init: true)
+    Result = Struct.new(:move, :resolution_triggered, :error, :game_result, keyword_init: true)
 
     def initialize(session:, player:, move_type:, payload:)
       @session   = session
@@ -30,8 +30,14 @@ module Games
 
       if engine.all_moves_submitted?
         @session.begin_resolution!
-        Games::ResolveSessionJob.perform_later(@session.id)
-        Result.new(move: move, resolution_triggered: true, error: nil)
+        if Simulation.enabled?
+          # Simulation: resolve inline so the result is returned in this response.
+          Games::ResolveSession.new(@session).call
+          Result.new(move: move, resolution_triggered: true, error: nil, game_result: @session.reload.game_result)
+        else
+          Games::ResolveSessionJob.perform_later(@session.id)
+          Result.new(move: move, resolution_triggered: true, error: nil)
+        end
       else
         Result.new(move: move, resolution_triggered: false, error: nil)
       end

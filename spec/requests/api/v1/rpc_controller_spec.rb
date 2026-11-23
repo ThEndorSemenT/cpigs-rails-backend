@@ -8,6 +8,7 @@ RSpec.describe Api::V1::RpcController, type: :request do
     let(:faraday_response) { instance_double(Faraday::Response, body: rpc_response_body, status: 200) }
 
     before do
+      allow(ENV).to receive(:[]).and_call_original
       allow(ENV).to receive(:[]).with("ALCHEMY_POLYGON_RPC_URL").and_return(rpc_url)
       allow(Faraday).to receive(:post).and_return(faraday_response)
     end
@@ -27,6 +28,16 @@ RSpec.describe Api::V1::RpcController, type: :request do
         rpc_request_body,
         { "Content-Type" => "application/json" }
       )
+    end
+
+    context "in simulation mode", :simulation do
+      it "returns 403 and never calls Alchemy, even for eth_sendRawTransaction" do
+        body = { jsonrpc: "2.0", method: "eth_sendRawTransaction", params: ["0xdead"], id: 1 }.to_json
+        post api_v1_rpc_polygon_path, params: body, headers: { "Content-Type" => "application/json" }
+
+        expect(response).to have_http_status(:forbidden)
+        expect(Faraday).not_to have_received(:post)
+      end
     end
 
     context "when the RPC endpoint is not configured" do

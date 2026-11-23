@@ -28,15 +28,25 @@ module Api
             move_type:            params[:move_type],
             resolution_triggered: result.resolution_triggered
           })
-          render json: {
+          body = {
             move_id:              result.move.id,
             sequence:             result.move.sequence,
             resolution_triggered: result.resolution_triggered
-          }, status: :created
+          }
+          body[:result] = result_json(result.game_result) if result.game_result
+          render json: body, status: :created
         end
       end
 
       private
+
+      def result_json(game_result)
+        {
+          draw:          game_result.draw,
+          winner_wallet: game_result.winner&.wallet_address,
+          loser_wallet:  game_result.loser&.wallet_address
+        }
+      end
 
       def load_session
         @session = GameSession.find_by_param(params[:id] || params[:game_session_id])
