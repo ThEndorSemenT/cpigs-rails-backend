@@ -196,7 +196,7 @@ class GameSession < ApplicationRecord
       when :schedule_move_deadline
         Games::MoveDeadlineJob.set(wait_until: move_deadline_at).perform_later(id)
       end
-    rescue StandardError => e
+    rescue StandardError, LoadError => e
       Rails.logger.error("[GameSession##{id}] #{event} side effect failed: #{e.class}: #{e.message}")
     end
   end

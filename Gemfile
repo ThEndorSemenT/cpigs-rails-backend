@@ -8,6 +8,8 @@ gem "puma", ">= 5.0"
 # Background jobs
 gem "sidekiq", "~> 7.0"
 gem "sidekiq-cron", "~> 1.12"
+# Action Cable redis adapter (config/cable.yml production); sidekiq only pulls redis-client
+gem "redis", "~> 5.0"
 # connection_pool 3.0 changed pop() to keyword args; sidekiq 7.x still uses positional
 gem "connection_pool", "~> 2.4"
 
